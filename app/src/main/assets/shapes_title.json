@@ -1,0 +1,16 @@
+[
+  {
+    "title": "Africa",
+    "text_size": 50,
+    "color": "#000000",
+    "latitude": 18.902389796969448,
+    "longitude": 14.877051673829557
+  },
+  {
+    "title": "Madagascar",
+    "text_size": 20,
+    "color": "#000000",
+    "latitude": -20.182886472696126,
+    "longitude": 46.45624604076147
+  }
+]
