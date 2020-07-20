@@ -15,38 +15,32 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/plus"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
-        android:text="+"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <Button
-        android:id="@+id/minus"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="2dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        android:text="-"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/plus" />
+        <ImageButton
+            android:id="@+id/plus"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:background="@drawable/button_plus"
+            android:src="@drawable/ic_minus" />
 
-    <Button
-        android:id="@+id/position"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="2dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        android:text="p"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/minus" />
+        <ImageButton
+            android:id="@+id/minus"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_below="@+id/plus"
+            android:layout_marginTop="-2dp"
+            android:background="@drawable/button_minus"
+            android:src="@drawable/ic_plus" />
+
+    </RelativeLayout>
 
     <SeekBar
         android:id="@+id/seekBar"

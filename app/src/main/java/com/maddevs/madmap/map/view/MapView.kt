@@ -22,6 +22,7 @@ class MapView : View, MapContract.View {
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
 
     private val bitmapPaint = Paint(Paint.DITHER_FLAG)
+    private val paintLimiter = Paint()
 
     private lateinit var bitmap: Bitmap
     private lateinit var drawCanvas: Canvas
@@ -29,6 +30,10 @@ class MapView : View, MapContract.View {
 
     fun initMap(activity: Activity) {
         presenter = MapPresenter(activity)
+
+        paintLimiter.strokeWidth = 1.5f
+        paintLimiter.color = Color.parseColor("#95C0E0")
+        paintLimiter.style = Paint.Style.STROKE
 
         post {
             presenter.initCamera(width, height)
@@ -47,78 +52,50 @@ class MapView : View, MapContract.View {
 
         drawCanvas.drawColor(backgroundColor)
 
-        val shapeObjectRendering = presenter.shapesRendering
-        val shapeStringObjectRendering = presenter.shapesStringRendering
-        val borderLineObjectsRendering = presenter.bordersLineRendering
+        presenter.shapesRendering?.forEach {
+            val shape = Path()
 
-        if (shapeObjectRendering != null) {
-            for (item in shapeObjectRendering) {
-                val shape = Path()
-
-                for ((index, shapeItem) in item.shapeList.withIndex()) {
-                    if (index == 1) {
-                        shape.moveTo(shapeItem)
-                    } else {
-                        shape.lineTo(shapeItem)
-                    }
+            for ((index, shapeItem) in it.shapeList.withIndex()) {
+                if (index == 1) {
+                    shape.moveTo(shapeItem)
+                } else {
+                    shape.lineTo(shapeItem)
                 }
-
-                drawCanvas.save()
-
-                val paintShape = Paint()
-                paintShape.color = Color.parseColor(item.color)
-                drawCanvas.drawPath(shape, paintShape)
-
-                drawCanvas.restore()
             }
+
+            drawCanvas.save()
+
+            val paintShape = Paint()
+            paintShape.color = Color.parseColor(it.color)
+            drawCanvas.drawPath(shape, paintShape)
+
+            drawCanvas.restore()
         }
 
-        if (shapeStringObjectRendering != null) {
-            for (item in shapeStringObjectRendering) {
-                drawCanvas.save()
+        presenter.shapesStringRendering?.forEach {
+            drawCanvas.save()
 
-                val textPaint = Paint()
-                textPaint.textSize = item.stringData.size
-                textPaint.textAlign = Paint.Align.CENTER
+            val textPaint = Paint()
+            textPaint.textSize = it.stringData.size
+            textPaint.textAlign = Paint.Align.CENTER
 
-                drawCanvas.drawText(
-                    item.stringData.string,
-                    item.x.toFloat(),
-                    item.y.toFloat(),
-                    textPaint
-                )
+            drawCanvas.drawText(
+                it.stringData.string,
+                it.x.toFloat(),
+                it.y.toFloat(),
+                textPaint
+            )
 
-                drawCanvas.restore()
-            }
+            drawCanvas.restore()
         }
 
-        if (borderLineObjectsRendering != null) {
-            for (item in borderLineObjectsRendering) {
-                drawCanvas.save()
+        presenter.bordersLineRendering?.forEach {
+            drawCanvas.save()
 
-                val paint = Paint()
-                paint.strokeWidth = 1.5f
-                paint.color = Color.parseColor("#a0a0a0")
-                paint.style = Paint.Style.STROKE
+            drawCanvas.drawLine(it.pointOne, it.pointTwo, paintLimiter)
 
-                drawCanvas.drawLine(item.pointOne, item.pointTwo, paint)
-
-                drawCanvas.restore()
-            }
+            drawCanvas.restore()
         }
-
-        presenter.cameraUpdater
-
-        val s = Paint()
-        s.style = Paint.Style.FILL
-        s.color = Color.BLACK
-
-        drawCanvas.drawCircle(
-            presenter.cameraUpdater.x.toFloat(),
-            presenter.cameraUpdater.y.toFloat(),
-            30F,
-            s
-        )
 
         canvas.drawBitmap(bitmap, 0f, 0f, bitmapPaint)
 

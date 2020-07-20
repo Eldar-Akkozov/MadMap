@@ -21,13 +21,6 @@ class MainActivity : AppCompatActivity() {
             map.changeCameraPosition(1000)
         }
 
-//        position.setOnClickListener {
-//            map.changeCameraPosition(18.902389796969448, 14.877051673829557)
-//        }
-
-        position.setOnClickListener {
-            map.changeCameraPosition(18.902389796969448, 14.877051673829557)
-        }
 
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
