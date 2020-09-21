@@ -1,6 +1,5 @@
 package com.maddevs.madmap.map.model
 
-import java.lang.NullPointerException
 import kotlin.math.*
 
 open class Point {
@@ -28,6 +27,11 @@ open class Point {
         this.y = point.y
     }
 
+    fun updateData(x: Double, y: Double) {
+        this.x = x
+        this.y = y
+    }
+
     fun distanceTo(point: Point) : Double {
         return sqrt((x - point.x).pow(2) + (y - point.y).pow(2))
     }
@@ -39,6 +43,17 @@ open class Point {
         if (theta < 0.0) theta += PI * 2
 
         return rad2deg * theta
+    }
+
+    fun middleTo(point: Point): Point {
+        return Point((this.x + point.x) / 2, (this.y + point.y) / 2)
+    }
+
+    fun pointTo(bearing: Double, radius: Double) : Point {
+        val yT = radius * sin(Math.toRadians(bearing))
+        val xT = radius * cos(Math.toRadians(bearing))
+
+        return Point(x + xT, y + yT)
     }
 
     fun rotate(angle: Double) {

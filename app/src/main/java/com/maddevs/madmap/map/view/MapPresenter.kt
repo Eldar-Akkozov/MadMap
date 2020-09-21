@@ -1,57 +1,100 @@
 package com.maddevs.madmap.map.view
 
 import android.app.Activity
+import android.util.Log
+import com.maddevs.madmap.map.contract.Estimation
 import com.maddevs.madmap.map.contract.MapContract
 import com.maddevs.madmap.map.model.GeoPoint
+import com.maddevs.madmap.map.model.Point
 import com.maddevs.madmap.map.model.`object`.BorderLineObject
 import com.maddevs.madmap.map.model.`object`.BorderObject
 import com.maddevs.madmap.map.model.`object`.ShapeObject
 import com.maddevs.madmap.map.model.`object`.StringObject
-import com.maddevs.madmap.map.model.camera.CameraPosition
-import com.maddevs.madmap.map.model.camera.CameraUpdater
-import com.maddevs.madmap.map.model.camera.CameraZoom
+import com.maddevs.madmap.map.module.camera.CameraPosition
+import com.maddevs.madmap.map.module.camera.CameraRotate
+import com.maddevs.madmap.map.module.camera.CameraZoom
 
-class MapPresenter(activity: Activity) : MapContract.Presenter {
+class MapPresenter(activity: Activity, repository: MapContract.Repository = MapRepository(activity)) : MapContract.Presenter {
 
-    private val repository: MapRepository = MapRepository(activity)
+    private val shapesRendering: List<ShapeObject>? = repository.getShapes()
+    private val bordersRendering: List<BorderObject>? = repository.getBorders()
+    private val bordersLineRendering: List<BorderLineObject>? = repository.getBordersLine()
+    private val shapesStringRendering: List<StringObject>? = repository.getShapesString()
+
+    private lateinit var cameraPosition: CameraPosition
+    private lateinit var cameraRotate: CameraRotate
+    lateinit var cameraZoom: CameraZoom
+
+    private var widthC: Int = 0
+    private var heightY: Int = 0
 
     private var mX = 0f
     private var mY = 0f
 
-    val shapesRendering: List<ShapeObject>?
-    val bordersRendering: List<BorderObject>?
-    val bordersLineRendering: List<BorderLineObject>?
-    val shapesStringRendering: List<StringObject>?
+    private var mDX = 0f
+    private var mDY = 0f
 
-    private lateinit var cameraPosition: CameraPosition
-    lateinit var cameraUpdater: CameraUpdater
-    private lateinit var cameraZoom: CameraZoom
-
-    init {
-        shapesRendering = repository.getShapes()
-        bordersRendering = repository.getBorders()
-        bordersLineRendering = repository.getBordersLine()
-        shapesStringRendering = repository.getShapesString()
+    override fun getShapes(): List<ShapeObject>? {
+        return shapesRendering
     }
 
-    override fun onTouchStart(x: Float, y: Float) {
+    override fun getShapesString(): List<StringObject>? {
+        return shapesStringRendering
+    }
+
+    override fun getBorders(): List<BorderObject>? {
+        return bordersRendering
+    }
+
+    override fun getBordersLine(): List<BorderLineObject>? {
+        return bordersLineRendering
+    }
+
+    override fun touchStart(x: Float, y: Float) {
         mX = x
         mY = y
     }
 
-    override fun onTouchMove(x: Float, y: Float) {
+    override fun touchMove(x: Float, y: Float) {
         val dx = x - mX
         val dy = y - mY
 
-        moveCoordiante(dx, dy)
+        if (Point(x.toDouble(), y.toDouble()).distanceTo(Point(mX.toDouble(), mY.toDouble())) < 300) {
+            moveCoordiante(dx, dy)
+        }
 
         mX = x
         mY = y
     }
 
-    fun initCamera(width: Int, height: Int) {
-        cameraPosition = CameraPosition(0.0, 0.0, width, height)
-        cameraUpdater = CameraUpdater(cameraPosition.centerX.toDouble(), cameraPosition.centerY.toDouble())
+    override fun touchDoubleMove(x: Float, y: Float) {
+        if (mDX == 0f || mDY == 0f) {
+            mDX = x
+            mDY = y
+        } else {
+            val dx = x - mDX
+            val dy = y - mDY
+
+            if (Point(x.toDouble(), y.toDouble()).distanceTo(Point(mDX.toDouble(), mDY.toDouble())) < 300) {
+                moveCoordiante(dx, dy)
+            }
+
+            mDX = x
+            mDY = y
+        }
+    }
+
+    override fun touchDoubleEnd() {
+        mDY = 0f
+        mDX = 0f
+    }
+
+    override fun initCamera(width: Int, height: Int) {
+        this.heightY = height / 2
+        this.widthC = width / 2
+
+        cameraPosition = CameraPosition(width, height)
+        cameraRotate = CameraRotate(width, height)
         cameraZoom = CameraZoom()
 
         moveCoordiante(
@@ -60,7 +103,7 @@ class MapPresenter(activity: Activity) : MapContract.Presenter {
         )
     }
 
-    override fun onChangeCameraPosition(latitude: Double, longitude: Double) {
+    override fun changeCameraPosition(latitude: Double, longitude: Double) {
         cameraPosition.updatePosition(latitude, longitude)
 
         moveCoordiante(
@@ -69,55 +112,83 @@ class MapPresenter(activity: Activity) : MapContract.Presenter {
         )
     }
 
-    override fun onChangeCameraPosition(zoom: Int) {
-        zoomCoordiante(zoom)
+    override fun changeCameraPosition(zoom: Double, type: CameraZoom.Type) {
+        zoomCoordiante(zoom, type)
     }
 
-    override fun onChangeCameraPosition(rotate: Double) {
+    override fun changeCameraPosition(rotate: Double) {
         rotateCoordinate(rotate)
 
         moveCoordiante(
-            ((cameraUpdater.x * -1) + cameraPosition.centerX).toFloat(),
-            ((cameraUpdater.y * -1) + cameraPosition.centerY).toFloat(),
+            ((cameraRotate.x * -1) + cameraRotate.regulatoryСenterX).toFloat(),
+            ((cameraRotate.y * -1) + cameraRotate.regulatoryСenterY).toFloat(),
             true
+        )
+    }
+
+    override fun changeCameraPosition(rotate: Double, regulatoryPoint: Point) {
+        rotateNotSaveCoordinate(rotate)
+
+        moveCoordiante(
+            ((cameraRotate.x * -1) + regulatoryPoint.x).toFloat(),
+            ((cameraRotate.y * -1) + regulatoryPoint.y).toFloat(),
+            true
+        )
+    }
+
+    override fun changeCameraPosition(point: Point) {
+        moveCoordiante(
+            ((point.x * -1) + cameraRotate.regulatoryСenterX).toFloat(),
+            ((point.y * -1) + cameraRotate.regulatoryСenterY).toFloat()
         )
     }
 
     private fun moveCoordiante(dx: Float, dy: Float, rotateMode: Boolean = false) {
         if (rotateMode) {
-            cameraUpdater.move(dx, dy)
+            cameraRotate.move(dx, dy)
         }
 
-        estimationData(object : MapContract.Estimation<GeoPoint>{
+        estimationData(object : Estimation<GeoPoint>{
             override fun counting(item: GeoPoint) {
                 item.move(dx, dy)
             }
         })
     }
 
-    private fun zoomCoordiante(zoom: Int) {
-        estimationData(object : MapContract.Estimation<GeoPoint>{
+    private fun zoomCoordiante(zoom: Double, type: CameraZoom.Type) {
+        moveCoordiante((widthC * -1).toFloat(), (heightY * -1).toFloat())
+
+        estimationData(object : Estimation<GeoPoint> {
             override fun counting(item: GeoPoint) {
-                item.changeZoom(zoom)
+                item.changeZoom(zoom, type)
             }
         })
 
-        moveCoordiante(((cameraZoom.point1.x - cameraZoom.point2.x).toFloat()), ((cameraZoom.point1.y - cameraZoom.point2.y).toFloat()))
+        moveCoordiante((widthC).toFloat(), (heightY).toFloat())
     }
 
     private fun rotateCoordinate(rotate: Double) {
-        cameraUpdater.changeRotate(rotate)
+        cameraRotate.changeRotate(rotate)
 
-        estimationData(object : MapContract.Estimation<GeoPoint>{
+        estimationData(object : Estimation<GeoPoint>{
             override fun counting(item: GeoPoint) {
                 item.changeRotate(rotate)
             }
         })
     }
 
-    fun estimationData(estimation: MapContract.Estimation<GeoPoint>) {
+    private fun rotateNotSaveCoordinate(rotate: Double) {
+        cameraRotate.rotate(rotate)
+
+        estimationData(object : Estimation<GeoPoint>{
+            override fun counting(item: GeoPoint) {
+                item.rotate(rotate)
+            }
+        })
+    }
+
+    fun estimationData(estimation: Estimation<GeoPoint>) {
         estimation.counting(cameraPosition)
-        estimation.counting(cameraZoom)
 
         bordersLineRendering?.forEach {
             estimation.counting(it.pointOne)

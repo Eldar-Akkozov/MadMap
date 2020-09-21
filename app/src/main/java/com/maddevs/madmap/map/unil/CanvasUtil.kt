@@ -15,4 +15,13 @@ object CanvasUtil {
             paint
         )
     }
+
+    fun Canvas.drawText(text: String, point: Point, paint: Paint) {
+        this.drawText(
+            text,
+            point.x.toFloat(),
+            point.y.toFloat(),
+            paint
+        )
+    }
 }

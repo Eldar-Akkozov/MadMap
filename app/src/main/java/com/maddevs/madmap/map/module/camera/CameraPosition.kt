@@ -1,8 +1,8 @@
-package com.maddevs.madmap.map.model.camera
+package com.maddevs.madmap.map.module.camera
 
 import com.maddevs.madmap.map.model.GeoPoint
 
-class CameraPosition(latitude: Double, longitude: Double, val width: Int, val height: Int) : GeoPoint(latitude, longitude) {
+class CameraPosition(width: Int, height: Int) : GeoPoint(0.0, 0.0) {
 
     var centerX: Int = width / 2
     var centerY: Int = height / 2

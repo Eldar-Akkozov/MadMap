@@ -4,7 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.SeekBar
-import com.maddevs.madmap.map.model.camera.CameraPosition
+import com.maddevs.madmap.map.module.camera.CameraZoom
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -15,17 +15,18 @@ class MainActivity : AppCompatActivity() {
         map.initMap(this)
 
         plus.setOnClickListener {
-            map.changeCameraPosition(-1000)
+            map.onChangeCameraPosition(2.0, CameraZoom.Type.PLUS)
         }
         minus.setOnClickListener {
-            map.changeCameraPosition(1000)
+            map.onChangeCameraPosition(2.0, CameraZoom.Type.MINUS)
         }
 
 
-        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
+        map.onChangeCameraPosition(42.878767474194284, 74.61443737149239)
+
+        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                Log.d("test123321", "" + progress)
-                map.changeCameraPosition(progress.toDouble())
+                map.onChangeCameraPosition(progress.toDouble())
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {

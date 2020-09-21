@@ -1,6 +1,6 @@
 package com.maddevs.madmap.map.model
 
-import android.util.Log
+import com.maddevs.madmap.map.module.camera.CameraZoom
 import com.maddevs.madmap.map.unil.GeoCoordinateConverter.converterGeoData
 
 open class GeoPoint(var latitude: Double, var longitude: Double) : Point(converterGeoData(latitude, longitude)) {
@@ -8,8 +8,6 @@ open class GeoPoint(var latitude: Double, var longitude: Double) : Point(convert
     private var angleRotateXY = 0.0
     private val angleRotate = 270.0
     var zoom = 10000
-
-    var types = "2"
 
     var dx: Float = 0f
     var dy: Float = 0f
@@ -26,14 +24,17 @@ open class GeoPoint(var latitude: Double, var longitude: Double) : Point(convert
         y += dy
     }
 
-    open fun changeZoom(addedZoom: Int) {
-        zoom += addedZoom
-
-        if (zoom < 1) {
-            zoom = 1
+    open fun changeZoom(addedZoom: Double, type: CameraZoom.Type) {
+        when (type) {
+            CameraZoom.Type.MINUS -> {
+                x /= addedZoom
+                y /= addedZoom
+            }
+            CameraZoom.Type.PLUS -> {
+                x *= addedZoom
+                y *= addedZoom
+            }
         }
-
-        updateCoordinate(latitude, longitude, true)
     }
 
     open fun changeRotate(rotate: Double) {

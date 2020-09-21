@@ -86,11 +86,11 @@ class MapRepository(private val context: Context) : MapContract.Repository {
                     BorderObject(
                         item.getDouble("latitudeOne"),
                         item.getDouble("longitudeOne")
-                    ),
+                    , "Not"),
                     BorderObject(
                         item.getDouble("latitudeTwo"),
                         item.getDouble("longitudeTwo")
-                    ),
+                    , "Not"),
                     item.getString("type")
                 )
             )
@@ -107,9 +107,5 @@ class MapRepository(private val context: Context) : MapContract.Repository {
         inputStream.close()
 
         return fileStrign
-    }
-
-    override fun getTotalRenderingLevel(): Int {
-        return 0
     }
 }

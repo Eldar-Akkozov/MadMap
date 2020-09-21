@@ -1,10 +1,11 @@
-package com.maddevs.madmap.map.model.camera
+package com.maddevs.madmap.map.module.camera
 
-import android.util.Log
-import com.maddevs.madmap.map.model.GeoPoint
 import com.maddevs.madmap.map.model.Point
 
-class CameraUpdater(x: Double, y: Double) : Point(x, y) {
+class CameraRotate(width: Int, height: Int) : Point((width / 2).toDouble(), (height / 2).toDouble()) {
+
+    var regulatoryСenterX: Int = width / 2
+    var regulatoryСenterY: Int = height / 2
 
     private var angleRotateXY = 0.0
 

@@ -9,9 +9,12 @@ import android.view.MotionEvent
 import android.view.View
 import androidx.annotation.ColorInt
 import com.maddevs.madmap.map.contract.MapContract
+import com.maddevs.madmap.map.module.camera.CameraZoom
+import com.maddevs.madmap.map.module.touch.TouchManager
 import com.maddevs.madmap.map.unil.PathUtil.lineTo
 import com.maddevs.madmap.map.unil.PathUtil.moveTo
 import com.maddevs.madmap.map.unil.CanvasUtil.drawLine
+import com.maddevs.madmap.map.unil.CanvasUtil.drawText
 
 class MapView : View, MapContract.View {
 
@@ -22,13 +25,21 @@ class MapView : View, MapContract.View {
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
 
     private val bitmapPaint = Paint(Paint.DITHER_FLAG)
+
     private val paintLimiter = Paint()
+    private val paintShape = Paint()
+    private val textPaint = Paint()
 
-    private lateinit var bitmap: Bitmap
-    private lateinit var drawCanvas: Canvas
+    private lateinit var touchManager: TouchManager
     private lateinit var presenter: MapPresenter
+    private lateinit var bitmap: Bitmap
 
-    fun initMap(activity: Activity) {
+    private var drawCanvas: Canvas? = null
+
+    private var activity: Activity? = null
+
+    override fun initMap(activity: Activity) {
+        this.activity = activity
         presenter = MapPresenter(activity)
 
         paintLimiter.strokeWidth = 1.5f
@@ -36,6 +47,7 @@ class MapView : View, MapContract.View {
         paintLimiter.style = Paint.Style.STROKE
 
         post {
+            touchManager = TouchManager(presenter, width, height)
             presenter.initCamera(width, height)
             initMapCanvas()
         }
@@ -44,99 +56,84 @@ class MapView : View, MapContract.View {
     private fun initMapCanvas() {
         bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         drawCanvas = Canvas(bitmap)
+
+        invalidate()
     }
 
     @SuppressLint("DrawAllocation")
     override fun onDraw(canvas: Canvas) {
-        canvas.save()
+        if (drawCanvas != null) {
+            canvas.save()
 
-        drawCanvas.drawColor(backgroundColor)
+            drawCanvas!!.drawColor(backgroundColor)
 
-        presenter.shapesRendering?.forEach {
-            val shape = Path()
+            presenter.getShapes()?.forEach {
+                val shape = Path()
 
-            for ((index, shapeItem) in it.shapeList.withIndex()) {
-                if (index == 1) {
-                    shape.moveTo(shapeItem)
-                } else {
-                    shape.lineTo(shapeItem)
+                for ((index, shapeItem) in it.shapeList.withIndex()) {
+                    if (index == 0) {
+                        shape.moveTo(shapeItem)
+                    } else {
+                        shape.lineTo(shapeItem)
+                    }
                 }
+
+                drawCanvas!!.save()
+
+                paintShape.color = Color.parseColor(it.color)
+                drawCanvas!!.drawPath(shape, paintShape)
+
+                drawCanvas!!.restore()
             }
 
-            drawCanvas.save()
+            presenter.getShapesString()?.forEach {
+                drawCanvas!!.save()
 
-            val paintShape = Paint()
-            paintShape.color = Color.parseColor(it.color)
-            drawCanvas.drawPath(shape, paintShape)
+                textPaint.textSize = it.stringData.size
+                textPaint.textAlign = Paint.Align.CENTER
 
-            drawCanvas.restore()
+                drawCanvas!!.drawText(it.stringData.string, it, textPaint)
+
+                drawCanvas!!.restore()
+            }
+
+            presenter.getBordersLine()?.forEach {
+                drawCanvas!!.save()
+
+                drawCanvas!!.drawLine(it.pointOne, it.pointTwo, paintLimiter)
+
+                drawCanvas!!.restore()
+            }
+
+            canvas.drawBitmap(bitmap, 0f, 0f, bitmapPaint)
+            canvas.restore()
         }
-
-        presenter.shapesStringRendering?.forEach {
-            drawCanvas.save()
-
-            val textPaint = Paint()
-            textPaint.textSize = it.stringData.size
-            textPaint.textAlign = Paint.Align.CENTER
-
-            drawCanvas.drawText(
-                it.stringData.string,
-                it.x.toFloat(),
-                it.y.toFloat(),
-                textPaint
-            )
-
-            drawCanvas.restore()
-        }
-
-        presenter.bordersLineRendering?.forEach {
-            drawCanvas.save()
-
-            drawCanvas.drawLine(it.pointOne, it.pointTwo, paintLimiter)
-
-            drawCanvas.restore()
-        }
-
-        canvas.drawBitmap(bitmap, 0f, 0f, bitmapPaint)
-
-        canvas.restore()
     }
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        val x = event.x
-        val y = event.y
-
-        when (event.action) {
-            MotionEvent.ACTION_DOWN -> {
-                presenter.onTouchStart(x, y)
-                invalidate()
-            }
-            MotionEvent.ACTION_MOVE -> {
-                presenter.onTouchMove(x, y)
-                invalidate()
-            }
-        }
+        touchManager.touch(event)
+        invalidate()
         return true
     }
 
-    override fun changeCameraPosition(zoom: Int) {
+    override fun onChangeCameraPosition(zoom: Double, type: CameraZoom.Type) {
         post {
-            presenter.onChangeCameraPosition(zoom)
+            presenter.changeCameraPosition(zoom, type)
             invalidate()
         }
     }
 
-    override fun changeCameraPosition(latitude: Double, longitude: Double) {
+    override fun onChangeCameraPosition(latitude: Double, longitude: Double) {
         post {
-            presenter.onChangeCameraPosition(latitude, longitude)
+            presenter.changeCameraPosition(latitude, longitude)
             invalidate()
         }
     }
 
-    override fun changeCameraPosition(rotate: Double) {
+    override fun onChangeCameraPosition(rotate: Double) {
         post {
-            presenter.onChangeCameraPosition(rotate)
+            presenter.changeCameraPosition(rotate)
             invalidate()
         }
     }
