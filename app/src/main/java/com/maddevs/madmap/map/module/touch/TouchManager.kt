@@ -1,6 +1,5 @@
 package com.maddevs.madmap.map.module.touch
 
-import android.util.Log
 import android.view.MotionEvent
 import com.maddevs.madmap.map.contract.MapContract
 import com.maddevs.madmap.map.model.Point
@@ -41,13 +40,13 @@ class TouchManager(var presenter: MapContract.Presenter, width: Int, height: Int
                     if (checkDistance > 10) {
                         distancePoint = 0.0
 
-                        presenter.changeCameraPosition(1.02, CameraZoom.Type.MINUS)
-                        presenter.changeCameraPosition(centerPoint.pointTo(middlePoint.bearingTo(centerPoint), (distance / 100) * 5))
+                        presenter.changeCameraPosition(1.02, CameraZoom.Type.PLUS)
+                        presenter.changeCameraPosition(centerPoint.pointTo(centerPoint.bearingTo(middlePoint), (distance / 100) * 5))
                     } else if (checkDistance < -10) {
                         distancePoint = 0.0
 
-                        presenter.changeCameraPosition(1.02, CameraZoom.Type.PLUS)
-                        presenter.changeCameraPosition(centerPoint.pointTo(centerPoint.bearingTo(middlePoint), (distance / 100) * 5))
+                        presenter.changeCameraPosition(1.02, CameraZoom.Type.MINUS)
+                        presenter.changeCameraPosition(centerPoint.pointTo(middlePoint.bearingTo(centerPoint), (distance / 100) * 5))
                     }
 
                     if (checkStartBearing != 0.0) {
@@ -97,5 +96,4 @@ class TouchManager(var presenter: MapContract.Presenter, width: Int, height: Int
             }
         }
     }
-
 }

@@ -11,11 +11,68 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
+<!--    <Button-->
+<!--        android:id="@+id/one"-->
+<!--        android:layout_width="90dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginBottom="16dp"-->
+<!--        android:text="1"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.498"-->
+<!--        app:layout_constraintStart_toStartOf="parent" />-->
+
+<!--    <Button-->
+<!--        android:id="@+id/two"-->
+<!--        android:layout_width="90dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="2"-->
+<!--        android:layout_marginBottom="76dp"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.498"-->
+<!--        app:layout_constraintStart_toStartOf="parent" />-->
+    <!--    <EditText-->
+<!--        android:id="@+id/level"-->
+<!--        android:hint="level"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginBottom="100dp"-->
+<!--        android:layout_marginLeft="46dp"-->
+<!--        android:layout_marginRight="46dp"-->
+<!--        app:layout_constraintBottom_toTopOf="@+id/buttom"-->
+<!--        tools:layout_editor_absoluteX="0dp" />-->
+
+<!--    <EditText-->
+<!--        android:id="@+id/lat"-->
+<!--        android:hint="lat"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginBottom="50dp"-->
+<!--        android:layout_marginLeft="46dp"-->
+<!--        android:layout_marginRight="46dp"-->
+<!--        app:layout_constraintBottom_toTopOf="@+id/buttom"-->
+<!--        tools:layout_editor_absoluteX="0dp" />-->
+
+<!--    <EditText-->
+<!--        android:id="@+id/lon"-->
+<!--        android:hint="lon"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginBottom="10dp"-->
+<!--        android:layout_marginLeft="46dp"-->
+<!--        android:layout_marginRight="46dp"-->
+<!--        app:layout_constraintBottom_toTopOf="@+id/buttom"-->
+<!--        tools:layout_editor_absoluteX="0dp" />-->
 
     <RelativeLayout
+        android:id="@+id/relativeLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -41,16 +98,5 @@
             android:src="@drawable/ic_plus" />
 
     </RelativeLayout>
-
-    <SeekBar
-        android:id="@+id/seekBar"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="28dp"
-        android:max="360"
-        android:progress="0"
-        app:layout_constraintBottom_toBottomOf="@+id/map"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

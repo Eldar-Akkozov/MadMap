@@ -1,6 +1,7 @@
 package com.maddevs.madmap.map.view
 
 import android.app.Activity
+import android.content.Context
 import android.util.Log
 import com.maddevs.madmap.map.contract.Estimation
 import com.maddevs.madmap.map.contract.MapContract
@@ -14,7 +15,7 @@ import com.maddevs.madmap.map.module.camera.CameraPosition
 import com.maddevs.madmap.map.module.camera.CameraRotate
 import com.maddevs.madmap.map.module.camera.CameraZoom
 
-class MapPresenter(activity: Activity, repository: MapContract.Repository = MapRepository(activity)) : MapContract.Presenter {
+class MapPresenter(context: Context, repository: MapContract.Repository = MapRepository(context)) : MapContract.Presenter {
 
     private val shapesRendering: List<ShapeObject>? = repository.getShapes()
     private val bordersRendering: List<BorderObject>? = repository.getBorders()
@@ -105,6 +106,22 @@ class MapPresenter(activity: Activity, repository: MapContract.Repository = MapR
 
     override fun changeCameraPosition(latitude: Double, longitude: Double) {
         cameraPosition.updatePosition(latitude, longitude)
+
+        moveCoordiante(
+            ((cameraPosition.x * -1) + cameraPosition.centerX).toFloat(),
+            ((cameraPosition.y * -1) + cameraPosition.centerY).toFloat()
+        )
+    }
+
+    override fun changeCameraPosition(latitude: Double, longitude: Double, zoomLevel: Int) {
+        estimationData(object : Estimation<GeoPoint>{
+            override fun counting(item: GeoPoint) {
+                item.updateCoordinateZoom(zoomLevel)
+            }
+        })
+
+        cameraPosition.updatePosition(latitude, longitude)
+        cameraPosition.updateCoordinateZoom(zoomLevel)
 
         moveCoordiante(
             ((cameraPosition.x * -1) + cameraPosition.centerX).toFloat(),

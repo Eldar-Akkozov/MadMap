@@ -10,10 +10,9 @@ import com.maddevs.madmap.map.module.camera.CameraZoom
 
 interface MapContract {
     interface View {
-        fun initMap(activity: Activity)
-
         fun onChangeCameraPosition(zoom: Double, type: CameraZoom.Type)
         fun onChangeCameraPosition(latitude: Double, longitude: Double)
+        fun onChangeCameraPosition(latitude: Double, longitude: Double, zoomLevel: Int)
         fun onChangeCameraPosition(rotate: Double)
     }
 
@@ -28,6 +27,7 @@ interface MapContract {
 
         fun changeCameraPosition(zoom: Double, type: CameraZoom.Type)
         fun changeCameraPosition(latitude: Double, longitude: Double)
+        fun changeCameraPosition(latitude: Double, longitude: Double, zoomLevel: Int)
         fun changeCameraPosition(rotate: Double)
         fun changeCameraPosition(rotate: Double, regulatoryPoint: Point)
         fun changeCameraPosition(point: Point)

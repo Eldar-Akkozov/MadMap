@@ -5,12 +5,12 @@ import com.maddevs.madmap.map.unil.GeoCoordinateConverter.converterGeoData
 
 open class GeoPoint(var latitude: Double, var longitude: Double) : Point(converterGeoData(latitude, longitude)) {
 
-    private var angleRotateXY = 0.0
     private val angleRotate = 270.0
-    var zoom = 10000
+    private val zoom = 10000
 
-    var dx: Float = 0f
-    var dy: Float = 0f
+    private var angleRotateXY = 0.0
+    private var dx: Float = 0f
+    private var dy: Float = 0f
 
     init {
         rotate(angleRotate)
@@ -26,11 +26,11 @@ open class GeoPoint(var latitude: Double, var longitude: Double) : Point(convert
 
     open fun changeZoom(addedZoom: Double, type: CameraZoom.Type) {
         when (type) {
-            CameraZoom.Type.MINUS -> {
+            CameraZoom.Type.PLUS -> {
                 x /= addedZoom
                 y /= addedZoom
             }
-            CameraZoom.Type.PLUS -> {
+            CameraZoom.Type.MINUS -> {
                 x *= addedZoom
                 y *= addedZoom
             }
@@ -41,6 +41,12 @@ open class GeoPoint(var latitude: Double, var longitude: Double) : Point(convert
         rotate(rotate - angleRotateXY)
 
         angleRotateXY = rotate
+    }
+
+    open fun updateCoordinateZoom(zoomLevel: Int) {
+        updateData(converterGeoData(latitude, longitude, zoomLevel))
+
+        rotate(angleRotate)
     }
 
     protected fun updateCoordinate(latitude: Double, longitude: Double, changeZoom: Boolean) {

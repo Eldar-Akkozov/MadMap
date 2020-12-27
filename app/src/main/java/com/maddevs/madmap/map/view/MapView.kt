@@ -21,9 +21,6 @@ class MapView : View, MapContract.View {
     @ColorInt
     private val backgroundColor: Int = Color.parseColor("#aadaff")
 
-    constructor(context: Context) : super(context, null)
-    constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
-
     private val bitmapPaint = Paint(Paint.DITHER_FLAG)
 
     private val paintLimiter = Paint()
@@ -36,11 +33,16 @@ class MapView : View, MapContract.View {
 
     private var drawCanvas: Canvas? = null
 
-    private var activity: Activity? = null
+    constructor(context: Context) : super(context, null) {
+        initMap(context)
+    }
 
-    override fun initMap(activity: Activity) {
-        this.activity = activity
-        presenter = MapPresenter(activity)
+    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
+        initMap(context)
+    }
+
+    private fun initMap(context: Context) {
+        presenter = MapPresenter(context)
 
         paintLimiter.strokeWidth = 1.5f
         paintLimiter.color = Color.parseColor("#95C0E0")
@@ -86,16 +88,7 @@ class MapView : View, MapContract.View {
                 drawCanvas!!.restore()
             }
 
-            presenter.getShapesString()?.forEach {
-                drawCanvas!!.save()
 
-                textPaint.textSize = it.stringData.size
-                textPaint.textAlign = Paint.Align.CENTER
-
-                drawCanvas!!.drawText(it.stringData.string, it, textPaint)
-
-                drawCanvas!!.restore()
-            }
 
             presenter.getBordersLine()?.forEach {
                 drawCanvas!!.save()
@@ -127,6 +120,13 @@ class MapView : View, MapContract.View {
     override fun onChangeCameraPosition(latitude: Double, longitude: Double) {
         post {
             presenter.changeCameraPosition(latitude, longitude)
+            invalidate()
+        }
+    }
+
+    override fun onChangeCameraPosition(latitude: Double, longitude: Double, zoomLevel: Int) {
+        post {
+            presenter.changeCameraPosition(latitude, longitude, zoomLevel)
             invalidate()
         }
     }

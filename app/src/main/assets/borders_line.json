@@ -2,29 +2,29 @@
   {
     "type" : "TOP",
     "latitudeOne": 85.0,
-    "longitudeOne": -185.0,
+    "longitudeOne": -85.0,
     "latitudeTwo": 85.0,
-    "longitudeTwo": 185.0
+    "longitudeTwo": 85.0
   },
   {
     "type" : "BOTTOM",
     "latitudeOne": -85.0,
-    "longitudeOne": -185.0,
+    "longitudeOne": -85.0,
     "latitudeTwo": -85.0,
-    "longitudeTwo": 185.0
+    "longitudeTwo": 85.0
   },
   {
     "type" : "RIGHT",
     "latitudeOne": 85.0,
-    "longitudeOne": 185.0,
+    "longitudeOne": 85.0,
     "latitudeTwo": -85.0,
-    "longitudeTwo": 185.0
+    "longitudeTwo": 85.0
   },
   {
     "type" : "LEFT",
     "latitudeOne": 85.0,
-    "longitudeOne": -185.0,
+    "longitudeOne": -85.0,
     "latitudeTwo": -85.0,
-    "longitudeTwo": -185.0
+    "longitudeTwo": -85.0
   }
 ]
